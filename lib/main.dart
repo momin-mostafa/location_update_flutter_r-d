@@ -1,4 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:location_update_r_d/controller.dart';
 import 'package:location_update_r_d/geo_locator.dart';
 
 void main() {
@@ -49,14 +53,24 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  @override
+  void initState() {
+    super.initState();
+    Get.lazyPut(() => Controller());
+  }
+
   Notify temp = Notify();
 
-  void _incrementCounter() {
+  void seter() {
     setState(() {
-      temp.init();
+      temp.setPreviousLocation(context);
+      log('${temp.previousPosition}', name: 'location');
+    });
+  }
+
+  void upload() {
+    setState(() {
       temp.notify(context);
-      _counter++;
     });
   }
 
@@ -95,19 +109,31 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
-              'You have pushed the button this many times:',
+              'Notified this many times:',
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            Obx(
+              () => Text(
+                '${Get.find<Controller>().counter.value}',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: upload,
+            tooltip: 'Increment',
+            child: const Icon(Icons.upload),
+          ),
+          FloatingActionButton(
+            onPressed: seter,
+            tooltip: 'Increment',
+            child: const Icon(Icons.add),
+          ),
+        ],
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
